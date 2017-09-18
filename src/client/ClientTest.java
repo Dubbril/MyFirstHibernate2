@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Hibernate;
+
 import dao.AddressDAO;
 import dao.BookDAO;
 import dao.BorrowDetailDAO;
@@ -234,11 +236,66 @@ public class ClientTest {
 
 	}
 
+	public void update() {
+		CustomerDAO custdao = new CustomerDAO();
+		AddressDAO addrdao = new AddressDAO();
+		ServiceDAO servicedao = new ServiceDAO();
+		BookDAO bookdao = new BookDAO();
+		try {
+			HibernateUtil.beginTransaction();
+
+			Service service = servicedao.findByPK(1);
+			service.setDes("CHANGE");
+
+			Book book = bookdao.findByPK(1);
+			book.setTitle("CHANGE");
+
+			Address addr = addrdao.findByPK(1);
+			addr.setZipcode("CHANGE");
+
+			Customer cust = custdao.findByPK(1);
+			cust.setAge(33);
+			cust.setFirstname("CHANGE");
+
+			custdao.update(cust);
+			addrdao.update(addr);
+
+			HibernateUtil.commitTransaction();
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			HibernateUtil.rollbackTransaction();
+			System.out.println("Can not update Data");
+		} finally {
+			HibernateUtil.closeSession();
+		}
+	}
+
+	public void delete() {
+		CustomerDAO custdao = new CustomerDAO();
+		try {
+			HibernateUtil.beginTransaction();
+			Customer cust = custdao.findByPK(1);
+			custdao.delete(cust);
+			cust = custdao.findByPK(2);
+			custdao.delete(cust);
+			cust = custdao.findByPK(3);
+			custdao.delete(cust);
+			HibernateUtil.commitTransaction();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			HibernateUtil.rollbackTransaction();
+			System.out.println("Can not delete Data");
+		}
+	}
+
 	public static void main(String[] args) {
 		ClientTest test = new ClientTest();
-		// test.SetDataTables();
-		// test.addCustomer();
-		// test.addBorrowDetial();
+		test.SetDataTables();
+		test.addCustomer();
+		test.addBorrowDetial();
+		// test.update();
+		test.delete();
 		test.display();
 	}
 
